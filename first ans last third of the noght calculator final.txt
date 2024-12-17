@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>First and Last Third of the Night Calculator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-image: url('your-islamic-background.jpg'); /* Replace with your background image */
+            background-size: cover;
+            color: #333;
+            text-align: center;
+            padding: 20px;
+        }
+        input[type="number"], select {
+            width: 80px;
+            padding: 10px;
+            margin: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .result {
+            margin-top: 20px;
+        }
+        #clarification {
+            margin-top: 30px;
+            color: red;
+            white-space: pre-line; /* Preserve line breaks */
+        }
+        #donation {
+            margin-top: 30px;
+        }
+    </style>
+</head>
+<body>
+    <h1 id="title">First and Last Third of the Night Calculator</h1>
+    <select id="language" onchange="changeLanguage()">
+        <option value="en">English</option>
+        <option value="ar">العربية</option>
+    </select>
+
+    <h2 id="maghribTitle">Maghrib Today</h2>
+    <input type="number" id="hour1" placeholder="Hour (1-12)" min="0" max="12">
+    <input type="number" id="minute1" placeholder="Minutes (0-59)" min="0" max="59">
+    <select id="period1">
+        <option value="AM">AM</option>
+        <option value="PM">PM</option>
+    </select>
+
+    <h2 id="fajrTitle">Fajr Tomorrow</h2>
+    <input type="number" id="hour2" placeholder="Hour (1-12)" min="0" max="12">
+    <input type="number" id="minute2" placeholder="Minutes (0-59)" min="0" max="59">
+    <select id="period2">
+        <option value="AM">AM</option>
+        <option value="PM">PM</option>
+    </select>
+
+    <button onclick="calculateTimes()">Calculate</button>
+    <div id="error" style="color: red;"></div>
+    <div class="result">
+        <div id="result1"></div>
+        <div id="result2"></div>
+        <div id="result3"></div>
+    </div>
+
+    <div id="clarification"></div>
+
+    <div id="donation">
+        <h3>Support Us</h3>
+        <p>You can use this website for free anytime. If you'd like to support us, please consider sending a tip.</p>
+        <a href="https://www.paypal.com/donate/?hosted_button_id=E26GCLGNREN9A" target="_blank">
+            <button>Donate via PayPal</button>
+        </a>
+    </div>
+
+    <div>
+        <h4>Contact Us</h4>
+        <p>Email: <a href="mailto:basselbendary17@gmail.com">basselbendary17@gmail.com</a></p>
+    </div>
+
+    <script>
+        let language = "en";
+
+        function changeLanguage() {
+            language = document.getElementById("language").value;
+            document.getElementById("title").innerText = language === "en" ? "First and Last Third of the Night Calculator" : "حاسبة الثلث الأول والأخير من الليل";
+            document.getElementById("maghribTitle").innerText = language === "en" ? "Maghrib Today" : "المغرب اليوم";
+            document.getElementById("fajrTitle").innerText = language === "en" ? "Fajr Tomorrow" : "الفجر غداً";
+            document.querySelector("button").innerText = language === "en" ? "Calculate" : "احسب";
+            document.getElementById("error").innerText = "";
+            document.getElementById("result1").innerText = "";
+            document.getElementById("result2").innerText = "";
+            document.getElementById("result3").innerText = "";
+            setClarificationText();
+        }
+
+        function setClarificationText() {
+            document.getElementById("clarification").innerText = language === "en" ? 
+                "1. If you are praying Isha at home, it is best to pray it between the first third of the night and midnight; you should always pray Isha before midnight.\n" +
+                "2. The best time for Qiyam and Tahajud is after the last third of the night and before Fajr.\n" +
+                "3. All times are rounded; for example, if the result of the first third of the night is 11:00 PM, then consider it 11:01 PM, and if the result of midnight is 12:01 AM, then consider it 12:00 AM, and if the result of the last third of the night is 2:30 AM, then consider it 2:31 AM." : 
+                "1. إذا كنت تصلي العشاء في المنزل، فمن الأفضل أن تصليها بين الثلث الأول من الليل والمنتصف، يجب أن تصلي العشاء دائمًا قبل منتصف الليل.\n" +
+                "2. أفضل وقت للقيام والتهجد هو بعد الثلث الأخير من الليل وقبل الفجر.\n" +
+                "3. جميع الأوقات تقريبية؛ على سبيل المثال، إذا كانت نتيجة الثلث الأول من الليل 11:00 مساءً، اعتبرها 11:01 مساءً، وإذا كانت نتيجة منتصف الليل 12:01 صباحًا، اعتبرها 12:00 صباحًا، وإذا كانت نتيجة الثلث الأخير من الليل 2:30 صباحًا، اعتبرها 2:31 صباحًا.";
+        }
+
+        function parseTime(hour, minute, period) {
+            if (period === "PM" && hour < 12) hour += 12;
+            if (period === "AM" && hour === 12) hour = 0;
+            return hour * 60 + minute; // Total minutes
+        }
+
+        function formatTime(totalMinutes) {
+            const hours = Math.floor(totalMinutes / 60) % 24;
+            const minutes = totalMinutes % 60;
+            const period = hours < 12 ? "AM" : "PM";
+            const displayHour = hours % 12 || 12; // Convert to 12-hour format
+            return `${displayHour}:${minutes < 10 ? '0' : ''}${minutes} ${period}`;
+        }
+
+        function calculateTimes() {
+            const hour1 = parseInt(document.getElementById("hour1").value) || 0;
+            const minute1 = parseInt(document.getElementById("minute1").value) || 0;
+            const period1 = document.getElementById("period1").value;
+
+            const hour2 = parseInt(document.getElementById("hour2").value) || 0;
+            const minute2 = parseInt(document.getElementById("minute2").value) || 0;
+            const period2 = document.getElementById("period2").value;
+
+            if (hour1 < 0 || hour1 > 12 || hour2 < 0 || hour2 > 12) {
+                document.getElementById("error").innerText = language === "en" ? "Please enter valid hours between 0 and 12." : "يرجى إدخال ساعات صالحة بين 0 و 12.";
+                return;
+            }
+
+            if (minute1 < 0 || minute1 > 59 || minute2 < 0 || minute2 > 59) {
+                document.getElementById("error").innerText = language === "en" ? "Please enter valid minutes between 0 and 59." : "يرجى إدخال دقائق صالحة بين 0 و 59.";
+                return;
+            }
+
+            const time1 = parseTime(hour1, minute1, period1);
+            const time2 = parseTime(hour2, minute2, period2);
+
+            const totalMinutes = (time2 - time1 + 1440) % 1440; // Calculate difference and wrap around for negative values
+
+            // Calculate the first third, midnight, and last third
+            const firstThirdMinutes = Math.floor(totalMinutes / 3);
+            const midnightMinutes = Math.floor(totalMinutes / 2);
+            const lastThirdMinutes = totalMinutes - firstThirdMinutes; // This is 2/3 of the total minutes
+
+            const firstThird = formatTime(time1 + firstThirdMinutes);
+            const midnight = formatTime(time1 + midnightMinutes);
+            const lastThird = formatTime(time1 + lastThirdMinutes);
+
+            document.getElementById("result1").innerText = language === "en" ? `First Third of the Night: ${firstThird}` : `ثلث الليل الأول: ${firstThird}`;
+            document.getElementById("result2").innerText = language === "en" ? `Midnight: ${midnight}` : `منتصف الليل: ${midnight}`;
+            document.getElementById("result3").innerText = language === "en" ? `Last Third of the Night: ${lastThird}` : `ثلث الليل الأخير: ${lastThird}`;
+            
+            setClarificationText(); // Update clarification text after calculation
+        }
+    </script>
+</body>
+</html>
